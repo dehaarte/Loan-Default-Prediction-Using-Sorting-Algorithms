@@ -161,3 +161,9 @@ void heapSort(std::vector<loanRecord>& arr, const std::string& attribute, int or
         heapifyDown(arr, i, 0, attribute, order);
     }
 }
+
+int main() {
+    // placeholder code below to stop error, the actually main function code will be implemented later.
+    std::cout << "Program starts" << std::endl;
+    return 0;
+}
