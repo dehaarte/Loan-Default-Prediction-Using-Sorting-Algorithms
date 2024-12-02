@@ -114,51 +114,43 @@ float chosenAttribute(const loanRecord& record, const std::string& attribute) {
     // Might add more if statements to sort other attributes if necessary;
 }
 
-void heapifyDown(std::vector<loanRecord>& arr, int size, int root, const std::string& attribute, int order) {
-    int max = root;
+void heapifyDown(std::vector<loanRecord>& dataset, int size, int root, const std::string& attribute, int order) {
+    int maxOrMin = root;
     int left = 2 * root + 1;
     int right = 2 * root + 2;
 
-    if (left < size) {
-        if (order == 1) {
-            if (chosenAttribute(arr[left], attribute) < chosenAttribute(arr[max], attribute)) {
-                max = left;
-            }
-        } else {
-            if (chosenAttribute(arr[left], attribute) > chosenAttribute(arr[max], attribute)) {
-                max = left;
-            }
+    if (order == 1) {
+        if (left < size && chosenAttribute(dataset[left], attribute) > chosenAttribute(dataset[maxOrMin], attribute)) {
+            maxOrMin = left;
+        }
+        if (right < size && chosenAttribute(dataset[right], attribute) > chosenAttribute(dataset[maxOrMin], attribute)) {
+            maxOrMin = right;
         }
     }
-
-    if (right < size) {
-        if (order == 1) {
-            if (chosenAttribute(arr[right], attribute) < chosenAttribute(arr[max], attribute)) {
-                max = right;
-            }
-        } else {
-            if (chosenAttribute(arr[right], attribute) > chosenAttribute(arr[max], attribute)) {
-                max = right;
-            }
+    if (order == 2) {
+        if (left < size && chosenAttribute(dataset[left], attribute) < chosenAttribute(dataset[maxOrMin], attribute)) {
+            maxOrMin = left;
+        }
+        if (right < size && chosenAttribute(dataset[right], attribute) < chosenAttribute(dataset[maxOrMin], attribute)) {
+            maxOrMin = right;
         }
     }
-
-    if (max != root) {
-        std::swap(arr[root], arr[max]);
-        heapifyDown(arr, size, max, attribute, order);
+    if (maxOrMin != root) {
+        std::swap(dataset[root], dataset[maxOrMin]);
+        heapifyDown(dataset, size, maxOrMin, attribute, order);
     }
 }
 
-void heapSort(std::vector<loanRecord>& arr, const std::string& attribute, int order) {
-    int n = arr.size();
+void heapSort(std::vector<loanRecord>& dataset, const std::string& attribute, int order) {
+    int n = dataset.size();
 
     for (int i = n / 2 - 1; i >= 0; i--) {
-        heapifyDown(arr, n, i, attribute, order);
+        heapifyDown(dataset, n, i, attribute, order);
     }
 
     for (int i = n - 1; i > 0; i--) {
-        std::swap(arr[0], arr[i]);
-        heapifyDown(arr, i, 0, attribute, order);
+        std::swap(dataset[0], dataset[i]);
+        heapifyDown(dataset, i, 0, attribute, order);
     }
 }
 
