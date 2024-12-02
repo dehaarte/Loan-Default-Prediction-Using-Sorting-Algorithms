@@ -24,16 +24,17 @@ struct loanRecord {
     std::string loanPurpose;
     std::string hasCosigner;
     int defaults; // initialized for now until risk score and default calculations are implemented
+    float riskScore;
 
     loanRecord(const std::string& _loanID, int _age, int _income, int _loanAmount, int _creditScore,
         int _monthsEmployed, int _numCreditLines, float _interestRate, int _loanTerm, float _dtiRatio,
         const std::string& _education, const std::string& _employment, const std::string& _maritalStatus, const std::string& _hasMortgage,
         const std::string& _hasDependents, const std::string& _loanPurpose, const std::string& _hasCosigner, int _defaults)
-            : loanID(_loanID), age(_age), income(_income), loanAmount(_loanAmount), creditScore(_creditScore),
-              monthsEmployed(_monthsEmployed), numCreditLines(_numCreditLines), interestRate(_interestRate),
-              loanTerm(_loanTerm), dtiRatio(_dtiRatio), education(_education), employment(_employment),
-              maritalStatus(_maritalStatus), hasMortgage(_hasMortgage), hasDependents(_hasDependents),
-              loanPurpose(_loanPurpose), hasCosigner(_hasCosigner), defaults(_defaults) {}
+        : loanID(_loanID), age(_age), income(_income), loanAmount(_loanAmount), creditScore(_creditScore),
+        monthsEmployed(_monthsEmployed), numCreditLines(_numCreditLines), interestRate(_interestRate),
+        loanTerm(_loanTerm), dtiRatio(_dtiRatio), education(_education), employment(_employment),
+        maritalStatus(_maritalStatus), hasMortgage(_hasMortgage), hasDependents(_hasDependents),
+        loanPurpose(_loanPurpose), hasCosigner(_hasCosigner), defaults(_defaults), riskScore(0.0f) {}
 };
 
 // This function pares the csv file and loads the data into the records vector
@@ -94,10 +95,10 @@ void loadDataset(const std::string& filename, std::vector<loanRecord>& records) 
         defaults = std::stoi(token);
 
         records.emplace_back(loanID, age, income, loanAmount, creditScore, monthsEmployed, numCreditLines,
-                             interestRate, loanTerm, dtiRatio, education, employment, maritalStatus, hasMortgage,
-                             hasDependents, loanPurpose, hasCosigner, defaults);
-        }
-        file.close();
+            interestRate, loanTerm, dtiRatio, education, employment, maritalStatus, hasMortgage,
+            hasDependents, loanPurpose, hasCosigner, defaults);
+    }
+    file.close();
 }
 
 // This function retrieves the the user's chosen attribute from the dataset
@@ -154,7 +155,89 @@ void heapSort(std::vector<loanRecord>& dataset, const std::string& attribute, in
     }
 }
 
+// Calculates risk scored by weighted values
+float calculateRiskScore(const loanRecord& record) {
+    const float creditScoreWeight = .30f; //30%
+    const float dtiRatioWeight = .20f; //20%
+    const float incomeWeight = .15f; // 15 %
+    const float loanAmountWeight = .10f; //10%
+    const float monthsEmployedWeight = .10f; // 10%
+    const float interestRateWeight = .05f; // 5%
+    const float loanTermWeight = .05f; // 5%
+    const float numCreditLinesWeight = .05f; //5%
+
+    float riskScore = 0.0f; //default
+
+    //Credit Score Inversion and risk score factor calculation
+    float maxCreditScore = 850.0f;
+    float minCreditScore = 300.0f;
+    float creditScoreComponent = (maxCreditScore - record.creditScore) / (maxCreditScore - minCreditScore);
+    riskScore += creditScoreWeight * creditScoreComponent;
+
+    //dti ration risk score factoring.
+    //Higher DTI = Higher risk
+    float dtiRatioComponent = record.dtiRatio / 100.0f;
+    riskScore += dtiRatioWeight * dtiRatioComponent;
+
+    //Income risk score
+    float maxIncome = 150000.0f; //Highest income in the data set is 149999
+    float incomeComponent = 1.0f - (static_cast<float>(record.income) / maxIncome); //Converts income from parsed data to float to allow caluculation
+    if (incomeComponent < 0.0f) {
+        incomeComponent = 0.0f;
+    }
+    riskScore += incomeWeight * incomeComponent;
+
+
+    //Loan risk score factor
+    float maxLoanAmount = 250000.0f;
+    float loanAmountComponent = static_cast<float>(record.loanAmount) / maxLoanAmount;
+    riskScore += loanAmountWeight * loanAmountComponent;
+
+    //Months Employed risk factor
+    float maxMonthsEmployed = 120.0f;
+    float monthsEmployedComponent = 1.0f - (static_cast<float>(record.monthsEmployed) / maxMonthsEmployed);
+    if (monthsEmployedComponent < 0.0f) {
+        monthsEmployedComponent = 0.0f;
+    }
+    riskScore += monthsEmployedWeight * monthsEmployedComponent;
+
+    //Interest Rate Risk Factor
+    float maxInterestRate = 25.0f;
+    float interestRateComponent = record.interestRate / maxInterestRate;
+    riskScore += interestRateWeight * interestRateComponent;
+
+    //Loan Term Risk Factor
+    float maxLoanTerm = 60.0f;
+    float loanTermComponent = static_cast<float>(record.loanTerm) / maxLoanTerm;
+    riskScore += loanTermWeight * loanTermComponent;
+
+    //Num Credit Lines Risk Factor
+    float maxCreditLines = 4.0f;
+    float numCreditLinesComponent = static_cast<float>(record.numCreditLines) / maxCreditLines;
+    riskScore += numCreditLinesWeight * numCreditLinesComponent;
+
+    if (riskScore > 1.0f) {
+        riskScore = 1.0f;
+    }
+    if (riskScore < 0.0f) {
+        riskScore = 0.0f;
+    }
+
+    return riskScore;
+}
+
+//Default status function, if risk score >= .70 then default = 1
+int defaultStatus(float riskScore, float threshold = .7f) {
+    if (riskScore >= threshold) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
 int main() {
+
     // placeholder code below to stop error, the actually main function code will be implemented later.
     std::cout << "Program starts" << std::endl;
     return 0;
