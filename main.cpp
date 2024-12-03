@@ -343,145 +343,226 @@ int main() {
         if (menuChoice == 1) {
             while (true) {
                 std::string attribute;
-                int order, algoChoice;
-
-                // Attribute Selection
-                std::cout << "\n=============================\n";
+                std::cout <<"\n=============================\n";
                 std::cout << "Menu Option 1: Sort Dataset\n";
                 std::cout << "----------------------------\n";
-                std::cout << "Choose the column to sort:\n";
-                std::cout << "1. Age\n2. Income\n3. Loan Amount\n4. Credit Score\n5. Months Employed\n";
-                std::cout << "6. Number of Credit Lines\n7. Interest Rate\n8. Loan Term\n9. DTI Ratio\n";
-                std::cout << "10. Defaults (Original)\n11. Defaults (Calculated)\n";
-                std::cout << "=============================\n";
+                std::cout << "Choose the column to sort:";
+                std::cout <<"\n=============================\n";
+                std::cout << "1. Age\n";
+                std::cout << "2. Income\n";
+                std::cout << "3. Loan Amount\n";
+                std::cout << "4. Credit Score\n";
+                std::cout << "5. Months Employed\n";
+                std::cout << "6. Number of Credit Lines\n";
+                std::cout << "7. Interest Rate\n";
+                std::cout << "8. Loan Term\n";
+                std::cout << "9. DTI Ratio\n";
+                std::cout << "10. Defaults (Original)\n"; // implemented for testing the original default attribute in the dataset.
+                std::cout << "11. Defaults (Calculated)\n";
+                std::cout <<"=============================\n";
                 std::cout << "Enter your choice: ";
                 int attributeChoice;
                 std::cin >> attributeChoice;
 
-                if (attributeChoice == 1) attribute = "age";
-                else if (attributeChoice == 2) attribute = "income";
-                else if (attributeChoice == 3) attribute = "loanAmount";
-                else if (attributeChoice == 4) attribute = "creditScore";
-                else if (attributeChoice == 5) attribute = "monthsEmployed";
-                else if (attributeChoice == 6) attribute = "numCreditLines";
-                else if (attributeChoice == 7) attribute = "interestRate";
-                else if (attributeChoice == 8) attribute = "loanTerm";
-                else if (attributeChoice == 9) attribute = "dtiRatio";
-                else if (attributeChoice == 10) attribute = "defaults";
-                else if (attributeChoice == 11) attribute = "calculatedDefaults";
-                else {
+                if (attributeChoice == 1) {
+                    attribute = "age";
+                } else if (attributeChoice == 2) {
+                    attribute = "income";
+                } else if (attributeChoice == 3) {
+                    attribute = "loanAmount";
+                } else if (attributeChoice == 4) {
+                    attribute = "creditScore";
+                } else if (attributeChoice == 5) {
+                    attribute = "monthsEmployed";
+                }else if (attributeChoice == 6) {
+                    attribute = "numCreditLines";
+                }else if (attributeChoice == 7) {
+                    attribute = "interestRate";
+                }else if (attributeChoice == 8) {
+                    attribute = "loanTerm";
+                }else if (attributeChoice == 9) {
+                    attribute = "dtiRatio";
+                } else if (attributeChoice == 10) {
+                    attribute = "defaults";
+                } else if (attributeChoice == 11) {
+                    attribute = "calculatedDefaults";
+                } else {
                     std::cout << "Invalid attribute choice.\n";
                     continue;
                 }
-
-                // Sorting Order Selection
-                std::cout << "\n=============================\n";
+                // Sorting Order Menu
+                int order;
+                std::cout <<"\n=============================\n";
                 std::cout << "Choose sorting order:\n";
-                std::cout << "1. Ascending\n2. Descending\n";
-                std::cout << "=============================\n";
+                std::cout << "1. Ascending\n";
+                std::cout << "2. Descending\n" ;
+                std::cout <<"=============================\n";
                 std::cin >> order;
 
-                // Sorting Algorithm Selection
-                std::cout << "\n=============================\n";
+                // Sorting Algorithm Menu
+                int algorithm;
+                std::cout <<"=============================\n";
                 std::cout << "Choose sorting algorithm:\n";
-                std::cout << "1. Heap Sort\n2. Merge Sort\n";
-                std::cout << "=============================\n";
-                std::cin >> algoChoice;
+                std::cout << "1. Heap Sort\n";
+                std::cout << "2. Merge Sort\n";
+                std::cout <<"=============================\n";
+                std::cin >> algorithm;
 
-                // Performance Tracking
-                double timeTaken = measureExecutionTime(records, attribute, order, algoChoice);
-                std::string algoName = (algoChoice == 1) ? "Heap Sort" : "Merge Sort";
-                std::cout << algoName << " completed in " << timeTaken << " seconds.\n";
-
-                // Display Sorted Records
+                // assigning name to the user-selected algorithm to display the name in the performance cout
+                std::string algo_name;
+                if (algorithm == 1) {
+                    algo_name = "Heap Sort";
+                } else if (algorithm == 2) {
+                    algo_name = "Merge Sort";
+                } else {
+                    std::cout << "Invalid algorithm choice.\n";
+                    continue;
+                }
+                
+                // measure the performance of the user-selected algorithm
+                double time_measured = measureExecutionTime(records, attribute, order, algorithm);                
+                
+                // Display Records Menu
                 int displayChoice;
-                std::cout << "\nChoose how many records to display:\n";
-                std::cout << "1. First 10 Loan Records\n2. Entire dataset of Loan Records\n";
+                std::cout << "Choose how many records to display:\n";
+                std::cout << "1. First 10 Loan Records\n";
+                std::cout << "2. Entire dataset of Loan Records\n";
+                std::cin >> displayChoice;
+                size_t displayCount;
+                if (displayChoice == 1) {
+                    displayCount = 10;
+                }
+                if (displayChoice == 2) {
+                    displayCount = records.size();
+                }
+                std::cout << "Displaying " << displayCount << " records:\n";
+                for (size_t i = 0; i < displayCount; ++i) {
+                    std::cout << "Loan ID: " << records[i].loanID;
+                    std::cout << ", " << attribute << ": " << chosenAttribute(records[i], attribute) << "\n";
+                }
+                
+                // Displaying the performance of the user-selected algorithm
+                std::cout << "\n" << algo_name <<" completed in " << time_measured << " seconds.\n";
+
+                int sub_menu_choice;
+                std::cout << "\n--- Sub-Menu ---\n";
+                std::cout << "1. Repeat Sorting\n";
+                std::cout << "2. Return to Main Menu\n";
+                std::cout << "Enter your choice: ";
+                std::cin >> sub_menu_choice;
+                if (sub_menu_choice == 1) {
+                    std::cout << "Reapting Sorting menu...\n";
+                    continue;
+                }else if (sub_menu_choice == 2) {
+                    std::cout << "Returing to Main Menu...\n";
+                    break;
+                } else {
+                    std::cout << "Invalid choice!";
+                }
+
+            }
+        }
+        else if (menuChoice == 2) {
+            // Compare Sorting Algorithm Menu
+            while (true) {
+                std::string attribute;
+                int order;
+                std::cout <<"\n=========================================\n";
+                std::cout << "Menu Option 2: Compare Sorting Algorithms\n";
+                std::cout << "-----------------------------------------\n";
+                std::cout << "Choose the column to sort:\n";
+                std::cout <<"=========================================\n";
+                std::cout << "1. Age\n";
+                std::cout << "2. Income\n";
+                std::cout << "3. Loan Amount\n";
+                std::cout << "4. Credit Score\n";
+                std::cout << "5. Months Employed\n";
+                std::cout << "6. Number of Credit Lines\n";
+                std::cout << "7. Interest Rate\n";
+                std::cout << "8. Loan Term\n";
+                std::cout << "9. DTI Ratio\n";
+                std::cout << "10. Defaults (Original)\n"; // implemented for testing purposes, this is the original default attribute in the dataset.
+                std::cout << "11. Defaults (Calculated)\n";
+                std::cout <<"=============================\n";
+                std::cout << "Enter your choice: ";
+                int attributeChoice;
+                std::cin >> attributeChoice;
+
+                if (attributeChoice == 1) {
+                    attribute = "age";
+                } else if (attributeChoice == 2) {
+                    attribute = "income";
+                } else if (attributeChoice == 3) {
+                    attribute = "loanAmount";
+                } else if (attributeChoice == 4) {
+                    attribute = "creditScore";
+                } else if (attributeChoice == 5) {
+                    attribute = "monthsEmployed";
+                }else if (attributeChoice == 6) {
+                    attribute = "numCreditLines";
+                }else if (attributeChoice == 7) {
+                    attribute = "interestRate";
+                }else if (attributeChoice == 8) {
+                    attribute = "loanTerm";
+                }else if (attributeChoice == 9) {
+                    attribute = "dtiRatio";
+                } else if (attributeChoice == 10) {
+                    attribute = "defaults";
+                } else if (attributeChoice == 11) {
+                    attribute = "calculatedDefaults";
+                } else {
+                    std::cout << "Invalid attribute choice.\n";
+                    continue;
+                }
+                // Sorting Order Menu
+                std::cout <<"\n=============================\n";
+                std::cout << "Choose the sorting order:\n";
+                std::cout << "1. Ascending\n";
+                std::cout << "2. Descending\n" ;
+                std::cout <<"=============================\n";
+                std::cin >> order;
+
+                // Implement the sorting algorithm performance comparisons here
+
+                //Compare sorting algorithms
+                compareSortingAlgorithms(records, attribute, order);
+
+                int displayChoice;
+                std::cout << "Choose how many records to display:\n";
+                std::cout << "1. Top 10 records\n";
+                std::cout << "2. Entire Loan Records Dataset\n";
                 std::cin >> displayChoice;
 
-                size_t displayCount = (displayChoice == 1) ? 10 : records.size();
+                size_t displayCount;
+                if (displayChoice == 1) {
+                    displayCount = 10;
+                }
+                if (displayChoice == 2) {
+                    displayCount = records.size();
+                }
                 std::cout << "Displaying " << displayCount << " records:\n";
                 for (size_t i = 0; i < displayCount; ++i) {
                     std::cout << "Loan ID: " << records[i].loanID;
                     std::cout << ", " << attribute << ": " << chosenAttribute(records[i], attribute) << "\n";
                 }
 
-                // Sub-Menu
                 int sub_menu_choice;
                 std::cout << "\n--- Sub-Menu ---\n";
-                std::cout << "1. Repeat Sorting\n2. Return to Main Menu\n";
+                std::cout << "1. Repeat Sorting\n";
+                std::cout << "2. Return to Main Menu\n";
                 std::cout << "Enter your choice: ";
                 std::cin >> sub_menu_choice;
                 if (sub_menu_choice == 1) {
+                    std::cout << "Reapting Sorting menu...\n";
                     continue;
-                } else if (sub_menu_choice == 2) {
+                }else if (sub_menu_choice == 2) {
+                    std::cout << "Returing to Main Menu...\n";
                     break;
                 } else {
-                    std::cout << "Invalid choice!\n";
+                    std::cout << "Invalid choice!";
                 }
             }
         }
-
-        else if (menuChoice == 2) {
-            while (true) {
-                std::string attribute;
-                int order;
-
-                // Attribute Selection
-                std::cout << "\n=========================================\n";
-                std::cout << "Menu Option 2: Compare Sorting Algorithms\n";
-                std::cout << "-----------------------------------------\n";
-                std::cout << "Choose the column to sort:\n";
-                std::cout << "1. Age\n2. Income\n3. Loan Amount\n4. Credit Score\n5. Months Employed\n";
-                std::cout << "6. Number of Credit Lines\n7. Interest Rate\n8. Loan Term\n9. DTI Ratio\n";
-                std::cout << "10. Defaults (Original)\n11. Defaults (Calculated)\n";
-                std::cout << "=========================================\n";
-                std::cout << "Enter your choice: ";
-                int attributeChoice;
-                std::cin >> attributeChoice;
-
-                if (attributeChoice == 1) attribute = "age";
-                else if (attributeChoice == 2) attribute = "income";
-                else if (attributeChoice == 3) attribute = "loanAmount";
-                else if (attributeChoice == 4) attribute = "creditScore";
-                else if (attributeChoice == 5) attribute = "monthsEmployed";
-                else if (attributeChoice == 6) attribute = "numCreditLines";
-                else if (attributeChoice == 7) attribute = "interestRate";
-                else if (attributeChoice == 8) attribute = "loanTerm";
-                else if (attributeChoice == 9) attribute = "dtiRatio";
-                else if (attributeChoice == 10) attribute = "defaults";
-                else if (attributeChoice == 11) attribute = "calculatedDefaults";
-                else {
-                    std::cout << "Invalid attribute choice.\n";
-                    continue;
-                }
-
-                // Sorting Order Selection
-                std::cout << "\n=============================\n";
-                std::cout << "Choose the sorting order:\n";
-                std::cout << "1. Ascending\n2. Descending\n";
-                std::cout << "=============================\n";
-                std::cin >> order;
-
-                // Compare Sorting Algorithms
-                compareSortingAlgorithms(records, attribute, order);
-
-                // Sub-Menu
-                int sub_menu_choice;
-                std::cout << "\n--- Sub-Menu ---\n";
-                std::cout << "1. Repeat Comparison\n2. Return to Main Menu\n";
-                std::cout << "Enter your choice: ";
-                std::cin >> sub_menu_choice;
-                if (sub_menu_choice == 1) {
-                    continue;
-                } else if (sub_menu_choice == 2) {
-                    break;
-                } else {
-                    std::cout << "Invalid choice!\n";
-                }
-            }
-        }
-
         else if (menuChoice == 3) {
             std::cout << "Existing Program...\n";
             break;
