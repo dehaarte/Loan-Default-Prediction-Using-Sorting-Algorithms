@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <chrono>
 
 struct loanRecord {
     std::string loanID;
@@ -240,11 +241,82 @@ int defaultStatus(float riskScore, float threshold = .7f) {
 }
 
 std::vector<loanRecord> merge(const std::vector<loanRecord>& first, const std::vector<loanRecord>& second, const std::string& attribute, int order) {
-    // placeholder for implementation
+    std::vector<loanRecord> merged;
+    size_t i = 0, j = 0;
+
+    while (i < first.size() && j < second.size()) {
+        bool condition = (order == 1) ?
+                         (chosenAttribute(first[i], attribute) <= chosenAttribute(second[j], attribute)) :
+                         (chosenAttribute(first[i], attribute) >= chosenAttribute(second[j], attribute));
+        if (condition) {
+            merged.push_back(first[i]);
+            ++i;
+        } else {
+            merged.push_back(second[j]);
+            ++j;
+        }
+    }
+
+    while (i < first.size()) {
+        merged.push_back(first[i]);
+        ++i;
+    }
+
+    while (j < second.size()) {
+        merged.push_back(second[j]);
+        ++j;
+    }
+
+    return merged;
 }
 
 std::vector<loanRecord> mergeSort(const std::vector<loanRecord>& records, const std::string& attribute, int order) {
-    // placeholder for implementation
+    if (records.size() <= 1) {
+        return records;
+    }
+
+    size_t mid = records.size() / 2;
+    std::vector<loanRecord> left(records.begin(), records.begin() + mid);
+    std::vector<loanRecord> right(records.begin() + mid, records.end());
+
+    left = mergeSort(left, attribute, order);
+    right = mergeSort(right, attribute, order);
+
+    return merge(left, right, attribute, order);
+}
+
+double measureExecutionTime(std::vector<loanRecord>& records, const std::string& attribute, int order, int algorithm) {
+    auto start = std::chrono::high_resolution_clock::now();
+
+    if (algorithm == 1) {
+        heapSort(records, attribute, order);
+    } else if (algorithm == 2) {
+        records = mergeSort(records, attribute, order);
+    }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+
+    return elapsed.count();
+}
+
+void compareSortingAlgorithms(std::vector<loanRecord>& records, const std::string& attribute, int order) {
+    std::vector<loanRecord> heapRecords = records;
+    std::vector<loanRecord> mergeRecords = records;
+
+    double heapTime = measureExecutionTime(heapRecords, attribute, order, 1);
+    double mergeTime = measureExecutionTime(mergeRecords, attribute, order, 2);
+
+    std::cout << "\nHeap Sort completed in: " << heapTime << " seconds.";
+    std::cout << "\nMerge Sort completed in: " << mergeTime << " seconds.\n";
+
+    if (heapTime < mergeTime) {
+        std::cout << "Heap Sort was faster by " << (mergeTime - heapTime) << " seconds.\n";
+    } else if (mergeTime < heapTime) {
+        std::cout << "Merge Sort was faster by " << (heapTime - mergeTime) << " seconds.\n";
+    } else {
+        std::cout << "Both algorithms performed equally.\n";
+    }
 }
 
 int main() {
