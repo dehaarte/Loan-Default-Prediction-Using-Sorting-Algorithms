@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <chrono>
 
 struct loanRecord {
     std::string loanID;
@@ -240,11 +241,82 @@ int defaultStatus(float riskScore, float threshold = .7f) {
 }
 
 std::vector<loanRecord> merge(const std::vector<loanRecord>& first, const std::vector<loanRecord>& second, const std::string& attribute, int order) {
-    // placeholder for implementation
+    std::vector<loanRecord> merged;
+    size_t i = 0, j = 0;
+
+    while (i < first.size() && j < second.size()) {
+        bool condition = (order == 1) ?
+                         (chosenAttribute(first[i], attribute) <= chosenAttribute(second[j], attribute)) :
+                         (chosenAttribute(first[i], attribute) >= chosenAttribute(second[j], attribute));
+        if (condition) {
+            merged.push_back(first[i]);
+            ++i;
+        } else {
+            merged.push_back(second[j]);
+            ++j;
+        }
+    }
+
+    while (i < first.size()) {
+        merged.push_back(first[i]);
+        ++i;
+    }
+
+    while (j < second.size()) {
+        merged.push_back(second[j]);
+        ++j;
+    }
+
+    return merged;
 }
 
 std::vector<loanRecord> mergeSort(const std::vector<loanRecord>& records, const std::string& attribute, int order) {
-    // placeholder for implementation
+    if (records.size() <= 1) {
+        return records;
+    }
+
+    size_t mid = records.size() / 2;
+    std::vector<loanRecord> left(records.begin(), records.begin() + mid);
+    std::vector<loanRecord> right(records.begin() + mid, records.end());
+
+    left = mergeSort(left, attribute, order);
+    right = mergeSort(right, attribute, order);
+
+    return merge(left, right, attribute, order);
+}
+
+double measureExecutionTime(std::vector<loanRecord>& records, const std::string& attribute, int order, int algorithm) {
+    auto start = std::chrono::high_resolution_clock::now();
+
+    if (algorithm == 1) {
+        heapSort(records, attribute, order);
+    } else if (algorithm == 2) {
+        records = mergeSort(records, attribute, order);
+    }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+
+    return elapsed.count();
+}
+
+void compareSortingAlgorithms(std::vector<loanRecord>& records, const std::string& attribute, int order) {
+    std::vector<loanRecord> heapRecords = records;
+    std::vector<loanRecord> mergeRecords = records;
+
+    double heapTime = measureExecutionTime(heapRecords, attribute, order, 1);
+    double mergeTime = measureExecutionTime(mergeRecords, attribute, order, 2);
+
+    std::cout << "\nHeap Sort completed in: " << heapTime << " seconds.";
+    std::cout << "\nMerge Sort completed in: " << mergeTime << " seconds.\n";
+
+    if (heapTime < mergeTime) {
+        std::cout << "Heap Sort was faster by " << (mergeTime - heapTime) << " seconds.\n";
+    } else if (mergeTime < heapTime) {
+        std::cout << "Merge Sort was faster by " << (heapTime - mergeTime) << " seconds.\n";
+    } else {
+        std::cout << "Both algorithms performed equally.\n";
+    }
 }
 
 int main() {
@@ -328,26 +400,28 @@ int main() {
                 std::cin >> order;
 
                 // Sorting Algorithm Menu
-                int algoChoice;
+                int algorithm;
                 std::cout <<"=============================\n";
                 std::cout << "Choose sorting algorithm:\n";
                 std::cout << "1. Heap Sort\n";
                 std::cout << "2. Merge Sort\n";
                 std::cout <<"=============================\n";
-                std::cin >> algoChoice;
+                std::cin >> algorithm;
 
-                // Implement sorting algorithm performance here
+                // assigning name to the user-selected algorithm to display the name in the performance cout
                 std::string algo_name;
-                if (algoChoice == 1) {
+                if (algorithm == 1) {
                     algo_name = "Heap Sort";
-                    heapSort(records, attribute, order);
-                } else if (algoChoice == 2) {
+                } else if (algorithm == 2) {
                     algo_name = "Merge Sort";
-                    records = mergeSort(records, attribute, order);
                 } else {
                     std::cout << "Invalid algorithm choice.\n";
                     continue;
                 }
+                
+                // measure the performance of the user-selected algorithm
+                double time_measured = measureExecutionTime(records, attribute, order, algorithm);                
+                
                 // Display Records Menu
                 int displayChoice;
                 std::cout << "Choose how many records to display:\n";
@@ -366,6 +440,10 @@ int main() {
                     std::cout << "Loan ID: " << records[i].loanID;
                     std::cout << ", " << attribute << ": " << chosenAttribute(records[i], attribute) << "\n";
                 }
+                
+                // Displaying the performance of the user-selected algorithm
+                std::cout << "\n" << algo_name <<" completed in " << time_measured << " seconds.\n";
+
                 int sub_menu_choice;
                 std::cout << "\n--- Sub-Menu ---\n";
                 std::cout << "1. Repeat Sorting\n";
@@ -379,7 +457,7 @@ int main() {
                     std::cout << "Returing to Main Menu...\n";
                     break;
                 } else {
-                    std::cout << "Invald choice!";
+                    std::cout << "Invalid choice!";
                 }
 
             }
@@ -446,6 +524,9 @@ int main() {
 
                 // Implement the sorting algorithm performance comparisons here
 
+                //Compare sorting algorithms
+                compareSortingAlgorithms(records, attribute, order);
+
                 int displayChoice;
                 std::cout << "Choose how many records to display:\n";
                 std::cout << "1. Top 10 records\n";
@@ -464,10 +545,6 @@ int main() {
                     std::cout << "Loan ID: " << records[i].loanID;
                     std::cout << ", " << attribute << ": " << chosenAttribute(records[i], attribute) << "\n";
                 }
-                std::cout << "\n Heap Sorted completed in " << "placeholder for heap time variable"  << " seconds\n";
-                std::cout << "\n Merge Sorted completed in " << "placeholder for merge time variable"  << " seconds\n";
-
-                // implement performance comparsion if statements and comments here
 
                 int sub_menu_choice;
                 std::cout << "\n--- Sub-Menu ---\n";
@@ -482,7 +559,7 @@ int main() {
                     std::cout << "Returing to Main Menu...\n";
                     break;
                 } else {
-                    std::cout << "Invald choice!";
+                    std::cout << "Invalid choice!";
                 }
             }
         }
