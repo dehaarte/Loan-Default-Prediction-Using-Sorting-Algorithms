@@ -483,7 +483,7 @@ int main() {
             }
         }
         else if (menuChoice == 2) {
-            // Compare Sorting Algorithm Menu
+            // Menu to Compare Sorting Algorithm
             while (true) {
                 std::string attribute;
                 int order;
