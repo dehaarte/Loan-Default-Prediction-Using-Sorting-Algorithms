@@ -301,7 +301,7 @@ int main() {
                 } else if (attributeChoice == 4) {
                     attribute = "creditScore";
                 } else if (attributeChoice == 5) {
-                    attribute = "dtiRatio";
+                    attribute = "monthsEmployed";
                 }else if (attributeChoice == 6) {
                     attribute = "numCreditLines";
                 }else if (attributeChoice == 7) {
