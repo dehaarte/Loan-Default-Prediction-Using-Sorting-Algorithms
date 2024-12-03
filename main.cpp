@@ -24,6 +24,7 @@ struct loanRecord {
     std::string loanPurpose;
     std::string hasCosigner;
     int defaults; // initialized for now until risk score and default calculations are implemented
+    int calculatedDefaults;
     float riskScore;
 
     loanRecord(const std::string& _loanID, int _age, int _income, int _loanAmount, int _creditScore,
@@ -112,7 +113,9 @@ float chosenAttribute(const loanRecord& record, const std::string& attribute) {
     if (attribute == "interestRate") return record.interestRate;
     if (attribute == "loanTerm") return record.loanTerm;
     if (attribute == "dtiRatio") return record.dtiRatio;
-    // Might add more if statements to sort other attributes if necessary;
+    if (attribute == "defaults") return record.defaults;
+    if (attribute == "calculatedDefaults") return record.calculatedDefaults;
+    return 0;
 }
 
 void heapifyDown(std::vector<loanRecord>& dataset, int size, int root, const std::string& attribute, int order) {
