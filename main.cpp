@@ -321,7 +321,7 @@ void compareSortingAlgorithms(std::vector<loanRecord>& records, const std::strin
 
 int main() {
     std::vector<loanRecord> records;
-    loadDataset("C:\\Users\\moise\\OneDrive\\Documents\\Loan_default.csv", records);
+    loadDataset("Loan_default.csv", records);
 
     if (records.empty()) {
         std::cerr << "Dataset failed to load!" << std::endl;
