@@ -363,7 +363,7 @@ int main() {
                 std::cout << "7. Interest Rate\n";
                 std::cout << "8. Loan Term\n";
                 std::cout << "9. DTI Ratio\n";
-                std::cout << "10. Defaults (Original)\n"; // implemented for testing the original default attribute in the dataset.
+                std::cout << "10. Defaults (Original)\n"; //original default attribute in the dataset.
                 std::cout << "11. Defaults (Calculated)\n";
                 std::cout <<"=============================\n";
                 std::cout << "Enter your choice: ";
@@ -393,7 +393,7 @@ int main() {
                 } else if (attributeChoice == 11) {
                     attribute = "calculatedDefaults";
                 } else {
-                    std::cout << "Invalid attribute choice.\n";
+                    std::cout << "\nInvalid attribute choice.\n";
                     continue;
                 }
                 // Sorting Order Menu
@@ -405,9 +405,18 @@ int main() {
                 std::cout <<"=============================\n";
                 std::cin >> order;
 
+                if (order == 1) {
+                    std::cout << "Sorting in Ascending order...\n";
+                } else if (order == 2) {
+                    std::cout << "Sorting in Descending order...\n";
+                } else {
+                    std::cout << "Invalid choice!\n";
+                    continue;
+                }
+
                 // Sorting Algorithm Menu
                 int algorithm;
-                std::cout <<"=============================\n";
+                std::cout <<"\n=============================\n";
                 std::cout << "Choose sorting algorithm:\n";
                 std::cout << "1. Heap Sort\n";
                 std::cout << "2. Merge Sort\n";
@@ -424,15 +433,18 @@ int main() {
                     std::cout << "Invalid algorithm choice.\n";
                     continue;
                 }
-                
+
                 // measure the performance of the user-selected algorithm
-                double time_measured = measureExecutionTime(records, attribute, order, algorithm);                
-                
+                double time_measured = measureExecutionTime(records, attribute, order, algorithm);
+
                 // Display Records Menu
                 int displayChoice;
+                std::cout <<"\n===================================\n";
                 std::cout << "Choose how many records to display:\n";
                 std::cout << "1. First 10 Loan Records\n";
                 std::cout << "2. Entire dataset of Loan Records\n";
+                std::cout <<"===================================\n";
+                std::cout << "Enter your choice: ";
                 std::cin >> displayChoice;
                 size_t displayCount;
                 if (displayChoice == 1) {
@@ -441,20 +453,22 @@ int main() {
                 if (displayChoice == 2) {
                     displayCount = records.size();
                 }
-                std::cout << "Displaying " << displayCount << " records:\n";
+                std::cout << "\nDisplaying " << displayCount << " records:\n";
                 for (size_t i = 0; i < displayCount; ++i) {
                     std::cout << "Loan ID: " << records[i].loanID;
                     std::cout << ", " << attribute << ": " << chosenAttribute(records[i], attribute) << "\n";
                 }
-                
+
                 // Displaying the performance of the user-selected algorithm
                 std::cout << "\n" << algo_name <<" completed in " << time_measured << " seconds.\n";
 
                 int sub_menu_choice;
-                std::cout << "\n--- Sub-Menu ---\n";
+                std::cout << "\n----- Sub-Menu -----\n";
                 std::cout << "1. Repeat Sorting\n";
                 std::cout << "2. Return to Main Menu\n";
+                std::cout <<"\n---------------------\n";
                 std::cout << "Enter your choice: ";
+
                 std::cin >> sub_menu_choice;
                 if (sub_menu_choice == 1) {
                     std::cout << "Repeating Sorting menu...\n";
@@ -463,7 +477,7 @@ int main() {
                     std::cout << "Returning to Main Menu...\n";
                     break;
                 } else {
-                    std::cout << "Invalid choice!";
+                    std::cout << "Invalid choice!\n";
                 }
 
             }
@@ -476,7 +490,7 @@ int main() {
                 std::cout <<"\n=========================================\n";
                 std::cout << "Menu Option 2: Compare Sorting Algorithms\n";
                 std::cout << "-----------------------------------------\n";
-                std::cout << "Choose the column to sort:\n";
+                std::cout << "Choose the column to sort with Both Algorithms:\n";
                 std::cout <<"=========================================\n";
                 std::cout << "1. Age\n";
                 std::cout << "2. Income\n";
@@ -487,7 +501,7 @@ int main() {
                 std::cout << "7. Interest Rate\n";
                 std::cout << "8. Loan Term\n";
                 std::cout << "9. DTI Ratio\n";
-                std::cout << "10. Defaults (Original)\n"; // implemented for testing purposes, this is the original default attribute in the dataset.
+                std::cout << "10. Defaults (Original)\n"; // the original default attribute in the dataset.
                 std::cout << "11. Defaults (Calculated)\n";
                 std::cout <<"=============================\n";
                 std::cout << "Enter your choice: ";
@@ -526,31 +540,20 @@ int main() {
                 std::cout << "1. Ascending\n";
                 std::cout << "2. Descending\n" ;
                 std::cout <<"=============================\n";
+                std::cout << "Enter your choice: ";
                 std::cin >> order;
 
-                // Implement the sorting algorithm performance comparisons here
+                if (order == 1) {
+                    std::cout << "Sorting in Ascending order...\n";
+                } else if (order == 2) {
+                    std::cout << "Sorting in Descending order...\n";
+                } else {
+                    std::cout << "Invalid choice!\n";
+                    continue;
+                }
 
                 //Compare sorting algorithms
                 compareSortingAlgorithms(records, attribute, order);
-
-                int displayChoice;
-                std::cout << "Choose how many records to display:\n";
-                std::cout << "1. Top 10 records\n";
-                std::cout << "2. Entire Loan Records Dataset\n";
-                std::cin >> displayChoice;
-
-                size_t displayCount;
-                if (displayChoice == 1) {
-                    displayCount = 10;
-                }
-                if (displayChoice == 2) {
-                    displayCount = records.size();
-                }
-                std::cout << "Displaying " << displayCount << " records:\n";
-                for (size_t i = 0; i < displayCount; ++i) {
-                    std::cout << "Loan ID: " << records[i].loanID;
-                    std::cout << ", " << attribute << ": " << chosenAttribute(records[i], attribute) << "\n";
-                }
 
                 int sub_menu_choice;
                 std::cout << "\n--- Sub-Menu ---\n";
@@ -565,7 +568,7 @@ int main() {
                     std::cout << "Returning to Main Menu...\n";
                     break;
                 } else {
-                    std::cout << "Invalid choice!";
+                    std::cout << "Invalid choice!\n";
                 }
             }
         }
