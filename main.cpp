@@ -230,13 +230,13 @@ float calculateRiskScore(const loanRecord& record) {
     return riskScore;
 }
 
-//Default status function, if risk score >= .70 then default = 1
-int defaultStatus(float riskScore, float threshold = .7f) {
-    if (riskScore >= threshold) {
-        return 1;
+//Default status function, if risk score >= .40 then default = 1
+int defaultStatus(loanRecord& record, float threshold = .4f) {
+    if (record.riskScore >= threshold) {
+        return record.calculatedDefaults = 1;
     }
     else {
-        return 0;
+        return record.calculatedDefaults = 0;
     }
 }
 
@@ -326,6 +326,12 @@ int main() {
     if (records.empty()) {
         std::cerr << "Dataset failed to load!" << std::endl;
         return 1;
+    }
+
+
+    for (auto& record : records) {
+        record.riskScore = calculateRiskScore(record);
+        record.calculatedDefaults = defaultStatus(record);
     }
     int menuChoice;
 
@@ -451,10 +457,10 @@ int main() {
                 std::cout << "Enter your choice: ";
                 std::cin >> sub_menu_choice;
                 if (sub_menu_choice == 1) {
-                    std::cout << "Reapting Sorting menu...\n";
+                    std::cout << "Repeating Sorting menu...\n";
                     continue;
                 }else if (sub_menu_choice == 2) {
-                    std::cout << "Returing to Main Menu...\n";
+                    std::cout << "Returning to Main Menu...\n";
                     break;
                 } else {
                     std::cout << "Invalid choice!";
@@ -553,10 +559,10 @@ int main() {
                 std::cout << "Enter your choice: ";
                 std::cin >> sub_menu_choice;
                 if (sub_menu_choice == 1) {
-                    std::cout << "Reapting Sorting menu...\n";
+                    std::cout << "Repeating Sorting menu...\n";
                     continue;
                 }else if (sub_menu_choice == 2) {
-                    std::cout << "Returing to Main Menu...\n";
+                    std::cout << "Returning to Main Menu...\n";
                     break;
                 } else {
                     std::cout << "Invalid choice!";
